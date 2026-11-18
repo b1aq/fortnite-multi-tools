@@ -12,20 +12,20 @@ import (
 type region struct {
 	code string
 	name string
-	host string
+	hosts []string
 }
 
 // Fortnite matchmaking regions mapped to the nearest AWS regional endpoint.
 // This measures TCP connect latency, which is close to (not identical to) in-game ping.
 var regions = []region{
-	{"NAE", "NA East", "dynamodb.us-east-1.amazonaws.com"},
-	{"NAC", "NA Central", "dynamodb.us-east-2.amazonaws.com"},
-	{"NAW", "NA West", "dynamodb.us-west-1.amazonaws.com"},
-	{"EU", "Europe", "dynamodb.eu-central-1.amazonaws.com"},
-	{"BR", "Brazil", "dynamodb.sa-east-1.amazonaws.com"},
-	{"ASIA", "Asia", "dynamodb.ap-northeast-1.amazonaws.com"},
-	{"ME", "Middle East", "dynamodb.me-south-1.amazonaws.com"},
-	{"OCE", "Oceania", "dynamodb.ap-southeast-2.amazonaws.com"},
+	{"NAE", "NA East", []string{"dynamodb.us-east-1.amazonaws.com"}},
+	{"NAC", "NA Central", []string{"dynamodb.us-east-2.amazonaws.com"}},
+	{"NAW", "NA West", []string{"dynamodb.us-west-1.amazonaws.com"}},
+	{"EU", "Europe", []string{"dynamodb.eu-central-1.amazonaws.com"}},
+	{"BR", "Brazil", []string{"dynamodb.sa-east-1.amazonaws.com"}},
+	{"ASIA", "Asia", []string{"dynamodb.ap-northeast-1.amazonaws.com"}},
+	{"ME", "Middle East", []string{"dynamodb.me-south-1.amazonaws.com", "ec2.me-south-1.amazonaws.com", "s3.me-south-1.amazonaws.com", "dynamodb.me-central-1.amazonaws.com"}},
+	{"OCE", "Oceania", []string{"dynamodb.ap-southeast-2.amazonaws.com"}},
 }
 
 type stat struct {
@@ -73,12 +73,23 @@ func (s *stat) run(stop <-chan struct{}) {
 
 func (s *stat) probe() {
 	if s.addr == "" {
-		ips, err := net.LookupHost(s.r.host)
-		if err != nil || len(ips) == 0 {
+		// Try each candidate host until one answers, then stick with it.
+		for _, h := range s.r.hosts {
+			ips, err := net.LookupHost(h)
+			if err != nil || len(ips) == 0 {
+				continue
+			}
+			addr := net.JoinHostPort(ips[0], "443")
+			if c, derr := net.DialTimeout("tcp", addr, 2*time.Second); derr == nil {
+				c.Close()
+				s.addr = addr
+				break
+			}
+		}
+		if s.addr == "" {
 			s.record(0, false)
 			return
 		}
-		s.addr = net.JoinHostPort(ips[0], "443")
 	}
 	start := time.Now()
 	c, err := net.DialTimeout("tcp", s.addr, 2*time.Second)
