@@ -33,17 +33,19 @@ func main() {
 	// Add new tools here — they show up in the menu automatically.
 	tools := []tool{
 		{"Live Ping", "All Fortnite regions, in real time", livePing},
+		{"Tweaks", "Delay · Network · FPS · Restore", tweaksMenu},
 		{"Stretched Resolution", "Edit GameUserSettings.ini (auto backup)", stretchTool},
-		{"Restore Backup", "Roll GameUserSettings.ini back", restoreTool},
+		{"Restore Config Backup", "Roll GameUserSettings.ini back", restoreTool},
 	}
 
 	for {
 		clearScreen()
 		banner()
 		for i, t := range tools {
-			fmt.Printf("  %s[%d]%s %s%-22s%s %s%s%s\n", cyan, i+1, reset, bold, t.name, reset, gray, t.desc, reset)
+			menuItem(strconv.Itoa(i+1), t.name, t.desc)
 		}
-		fmt.Printf("  %s[0]%s Exit\n\n", cyan, reset)
+		menuItem("0", "Exit", "")
+		fmt.Println()
 
 		c := strings.ToLower(ask(""))
 		if c == "0" || c == "q" {

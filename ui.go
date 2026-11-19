@@ -37,3 +37,7 @@ func pause() {
 	fmt.Printf("\n  %sPress Enter to go back...%s", gray, reset)
 	readLine()
 }
+
+func menuItem(n, name, desc string) {
+	fmt.Printf("  %s[%s]%s %s%-22s%s %s%s%s\n", cyan, n, reset, bold, name, reset, gray, desc, reset)
+}

@@ -8,9 +8,17 @@ A colorful Windows terminal toolbox for Fortnite. Single `.exe`, no install, no 
 |---|------|--------------|
 | 1 | Live Ping | Pings every matchmaking region at once (NAE, NAC, NAW, EU, BR, ASIA, ME, OCE) in real time: ping, avg, min, max, jitter, loss |
 | 2 | Stretched Resolution | Writes a stretched resolution into `GameUserSettings.ini` (auto backup first) |
-| 3 | Restore Backup | Rolls `GameUserSettings.ini` back to a previous backup |
+| 3 | Restore Config Backup | Rolls `GameUserSettings.ini` back to a previous backup |
+| 2 | Tweaks | Delay · Network · FPS tweaks with per-tweak ratings, status, full backup and one-click restore |
 
-More tools (tweaks, etc.) are planned.
+### Tweaks
+
+Every tweak is rated honestly: **Proven**, **Likely**, **Marginal**, **Experimental**, **Risky**. "Apply ALL recommended" only applies Proven/Likely/Marginal ones that need no input.
+The exact previous values are saved to `%LOCALAPPDATA%\FortniteMultiTool\state.json` so **Restore → Undo everything** puts things back precisely. A Windows restore point is requested before the first change.
+
+Intentionally not included: Nagle / TcpAckFrequency (Fortnite uses UDP, so they do nothing for it).
+
+Run as Administrator for tweaks (the tool offers to relaunch itself).
 
 ## Download
 
