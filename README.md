@@ -1,4 +1,5 @@
 # Fortnite Multi Tool
+(i use ai)
 
 A colorful Windows terminal toolbox for Fortnite. Single `.exe`, no install, no dependencies.
 
